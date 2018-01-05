@@ -1,0 +1,181 @@
+# Udacity RSEND Perception Project Writeup
+
+**Author:** Ivo Georgiev
+
+**Date:** Jan 3, 2018
+
+## Overview
+
+This project involves object recognition for robot pick-and-place in Gazebo/RViz. A Willow Garage [PR2](http://www.willowgarage.com/pages/pr2/overview) robot is standing in front of a table on which various objects are placed. On both sides of the robot there are tables with a colored dropbox on each. The pick-and-place operation involves identifying the objects on the front table, picking them and placing them each in the appropriate box. Three different scenes, with 3, 5, and 8 objects, respectively, are presented to the robot.
+
+This submission contains only the _object recognition, labeling, and pick-and-place message formation_.
+
+## Perception pipeline
+
+The perception input are _ROS point clouds_. The PLC library is used for filtering, so the ROS point cloud is converted back and forth to PLC point cloud. Full RGB/HSV+XYZ data is used for the pipeline.
+
+The following perception pipeline is implemented:
+1. Voxel grid downsampling.
+2. Denoising using a _statistical outlier filter_. _Note: Denoising is important to reduce the false positive object recognitions. The parameters were chosen based on the reasnoning that with the object clouds being dense but noise being sparse and random, points in dense object clouds will have mean neighborhood distances very close to the global mean but noise points would have larger neighboring distance and can be filtered out almost completely. Indeed, this was the case._
+3. Two _pass-through_ filters to limit the perceived space along the `z` and `y` axes. _Note: The `z`-plane range filters out everything but the table and objects in front of the robot. The `y`-plane range filters the tables and boxes on both sides of the robot._
+4. _RANSAC_ segmentation with a _plane model_ is used to remove the table from the point cloud.
+5. Another _statistical outlier filter_ for the tabletop objects point cloud. _Note: This one is largely unnecessary, but empirically recognition has been better with it included._
+6. _Euclidean clustering_ is performed on the tabletop objects point cloud and the sub-cloud for each object is colored in a different color.
+7. A _pretrained SVM model_ is used to recognize each detected object and insert a label above it in the world scene.
+
+### SVM model
+
+#### Features
+
+The features are a concatenation of the HSV and normal histograms of the objects.
+
+#### Model
+
+A _linear_ SVM model with small _misclassification penalty scale factor C (0.05)_ (for prefering wider support-vector margins) and _balanced class weights_ (largely unnecessary because all objects come with an equal number of samples) does reasonably well when trained with **30** samples per object. It's ovearll accuracy is **~92%**. _Note: A different set of features was collected and a different model was trained separately for each scene._
+
+The model constently (within a small error margin) recognizes and correctly labels:
+1. 3/3 objects in scene 1.
+2. 5/5 objects in scene 2.
+3. 7/8 objects in scene 3.
+
+## Perception example
+
+RViz views of the perception pipeline are shown below.
+
+### Figure 1: Scene 3 with table filtered out
+
+![alt text](images/perc_3_objects.png "Objects")
+
+### Figure 2: Scene 3 with objects clustered 
+
+![alt text](images/perc_3_clustering.png "Clustering")
+
+### Figure 3: Scene 3 with objects labeled
+
+_Note: The Snacks object is misclassified as Glue._
+
+![alt text](images/perc_3_scene.png "Recognition")
+
+## Pick-n-place requests
+
+Request messages for the pick-n-place service are properly formatted and written to YAML files, separately for each scene. The following is the file for scene 1. _Note: Orientation quaternions have not been filled._
+
+```yaml
+object_list:
+- arm_name: right
+  object_name: biscuits
+  pick_pose:
+    orientation:
+      w: 0
+      x: 0
+      y: 0
+      z: 0
+    position:
+      x: 0.5419755578041077
+      y: -0.24277746677398682
+      z: 0.7059687972068787
+  place_pose:
+    orientation:
+      w: 0
+      x: 0
+      y: 0
+      z: 0
+    position:
+      x: 0
+      y: -0.71
+      z: 0.605
+  test_scene_num: 1
+- arm_name: right
+  object_name: soap
+  pick_pose:
+    orientation:
+      w: 0
+      x: 0
+      y: 0
+      z: 0
+    position:
+      x: 0.5421528816223145
+      y: -0.019842833280563354
+      z: 0.6743276119232178
+  place_pose:
+    orientation:
+      w: 0
+      x: 0
+      y: 0
+      z: 0
+    position:
+      x: 0
+      y: -0.71
+      z: 0.605
+  test_scene_num: 1
+- arm_name: left
+  object_name: soap2
+  pick_pose:
+    orientation:
+      w: 0
+      x: 0
+      y: 0
+      z: 0
+    position:
+      x: 0.44561120867729187
+      y: 0.22260966897010803
+      z: 0.6778631806373596
+  place_pose:
+    orientation:
+      w: 0
+      x: 0
+      y: 0
+      z: 0
+    position:
+      x: 0
+      y: 0.71
+      z: 0.605
+  test_scene_num: 1
+```
+
+### Files
+
+All required files are in the [submission](https://github.com/ivogeorg/udcty-rsend-perception-project/tree/master/submission) directory of the repository.
+
+YAML files: [Scene 1](output_1.yaml) | [Scene 2](output_2.yaml) | [Scene 3](output_3.yaml)
+
+## Implementation details
+
+### `class Dropbox`
+
+The `Dropbox` class was used to clean up the parameter reading and streamline the request message construction.
+
+1. Declaration:
+  ```python
+  class Dropbox:
+      def __init__(self, color, arm, x, y, z):
+          self.color = color
+          self.arm = arm
+          self.position = []
+          self.position.append(x)
+          self.position.append(y)
+          self.position.append(z)
+   ```
+2. Reading parameters:
+    ```python
+    object_list_param = rospy.get_param('/object_list')
+    dropbox_list_param = rospy.get_param('/dropbox')
+    boxes = {}
+    for box in dropbox_list_param:
+        boxes[box['group']] = Dropbox(box['group'], box['name'], box['position'][0], box['position'][1], box['position'][2]) 
+    boxes['unknown'] = Dropbox('unknown', 'unknown', 0, 0, 0)
+    ```
+3. Constructing request messages:
+    ```python
+                # set arm_name
+                arm_name = String()
+                arm_name.data = boxes.get(pick_object_group, 'unknown').arm
+
+                # set place_pose
+                place_pose = Pose()
+                dropbox = boxes.get(pick_object_group, 'unknown')
+                place_pose.position.x = dropbox.position[0]
+                place_pose.position.y = dropbox.position[1]
+                place_pose.position.z = dropbox.position[2]
+    ```
+
