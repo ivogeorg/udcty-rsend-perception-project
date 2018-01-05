@@ -14,7 +14,7 @@ This submission contains only the _object recognition, labeling, and pick-and-pl
 
 The perception input are _ROS point clouds_. The PLC library is used for filtering, so the ROS point cloud is converted back and forth to PLC point cloud. Full RGB/HSV+XYZ data is used for the pipeline.
 
-The following perception pipeline is implemented:
+The following perception pipeline, including the code from exercises 1-3, is implemented in the `pcl_callback()` routine of the [percpetion.py](perception.py) file, in order, starting on Line 66:
 1. Voxel grid downsampling.
 2. Denoising using a _statistical outlier filter_. _Note: Denoising is important to reduce the false positive object recognitions. The parameters were chosen based on the reasnoning that with the object clouds being dense but noise being sparse and random, points in dense object clouds will have mean neighborhood distances very close to the global mean but noise points would have larger neighboring distance and can be filtered out almost completely. Indeed, this was the case._
 3. Two _pass-through_ filters to limit the perceived space along the `z` and `y` axes. _Note: The `z`-plane range filters out everything but the table and objects in front of the robot. The `y`-plane range filters the tables and boxes on both sides of the robot._
@@ -58,7 +58,7 @@ _Note: The Snacks object is misclassified as Glue._
 
 ## Pick-n-place requests
 
-Request messages for the pick-n-place service are properly formatted and written to YAML files, separately for each scene. The following is the file for scene 1. _Note: Orientation quaternions have not been filled._
+Request messages for the pick-n-place service are properly formatted and written to YAML files, separately for each scene, in the `pr2_mover()` routine of the [percpetion.py](perception.py) file. The following is the output YAML file for scene 1. _Note: Orientation quaternions have not been filled._
 
 ```yaml
 object_list:
