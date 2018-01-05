@@ -31,12 +31,14 @@ The features are a concatenation of the HSV and normal histograms of the objects
 
 #### Model
 
-A _linear_ SVM model with small _misclassification penalty scale factor C (0.05)_ (for prefering wider support-vector margins) and _balanced class weights_ (largely unnecessary because all objects come with an equal number of samples) does reasonably well when trained with **30** samples per object. It's ovearll accuracy is **~92%**. _Note: A different set of features was collected and a different model was trained separately for each scene._
+A _linear_ SVM model with small _misclassification penalty scale factor C (0.05)_ (for prefering wider support-vector margins) and _balanced class weights_ (largely unnecessary because all objects come with an equal number of samples) does reasonably well when trained with **30** samples per object. It's ovearll accuracy is **~92%**. _Note: A different set of features was collected and a different model was trained separately for each scene. However, the model parameters have been kept the same throughout._
 
 The model constently (within a small error margin) recognizes and correctly labels:
 1. 3/3 objects in scene 1.
 2. 5/5 objects in scene 2.
 3. 7/8 objects in scene 3.
+
+_Note: The feature training and model files have been included for each scene._
 
 ## Perception example
 
