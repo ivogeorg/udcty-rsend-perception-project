@@ -35,7 +35,7 @@ _Note: While initially a different set of features was collected and a different
 
 #### Training
 
-The features are a concatenation of the HSV and normal histograms of an object, extracted from its point cloud. The _features.py_ file implements the two relevant functions `compute_color_histograms(cloud, using_hsv=False)` and `compute_normal_histograms(normal_cloud)`.
+The features are a concatenation of the HSV and normal histograms of an object, extracted from its point cloud. The [features.py](features.py) file implements the two relevant functions `compute_color_histograms(cloud, using_hsv=False)` and `compute_normal_histograms(normal_cloud)`. The confusion matrices are shown below.
 
 ![alt text](images/perc_confusion_matrices.png "Confusion matrices for the trained model")
 
@@ -58,21 +58,17 @@ RViz views of the perception pipeline are shown below.
 
 ![alt text](images/perc_3_clustering.png "Clustering")
 
-##### Figure 3: Scene 3 with objects labeled
+##### Figure 3: Scene 3 with 7/8 objects labeled
 
 _Note: The Snacks object is misclassified as Glue._
 
 ![alt text](images/perc_3_scene.png "Recognition")
 
-##### Figure 4: Scene 2 with objects labeled
-
-_Note: The Snacks object is misclassified as Glue._
+##### Figure 4: Scene 2 with 5/5 objects labeled
 
 ![alt text](images/perc_2_scene.png "Recognition")
 
-##### Figure 3: Scene 1 with objects labeled
-
-_Note: The Snacks object is misclassified as Glue._
+##### Figure 3: Scene 1 with 3/3 objects labeled
 
 ![alt text](images/perc_1_scene.png "Recognition")
 
@@ -206,9 +202,9 @@ The `Dropbox` class was used to clean up the parameter reading and streamline th
 1. The routine `pcl_callback()` is unwieldy and hard to maintain. I would pull out some of the code into separate routines and pull up the parameters for easy experimentation.
 2. I believe there is still some fine-tuning of the parameters left to be done. After (1), this process would be easier.
 3. I would like to visualize, to the extent possible, the feature space for this project, and come up with a model that recognizes all objects. I would parametrize the locations of the objects so I can generate my own scenarios with a routine.
-4. _Faster computer! Darn it, a Macbook Pro running Yosemite and the RoboND VM in Virtual Box is no fun. Gotta a have the right tools to good work fast._
+4. _Faster computer! Darn it, a Macbook Pro running Yosemite and the RoboND VM in Virtual Box is no fun. Gotta a have the right tools to do good work fast._
 
 ### Extensions
 
-1. I would like to complete the pick-and-place routine.
-2. Finally, I would like to tackle the large scene with three double-decker tables.
+1. I would like to complete the pick-and-place routine, including collision avoidance and robot motion, and have the robot place the objects in the dropboxes.
+2. Finally, I would like to tackle the cluttered scene with the double-decker tables.
