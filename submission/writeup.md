@@ -4,6 +4,28 @@
 
 **Date:** Jan 3, 2018
 
+## Table of Contents
+* [Overview](#overview)
+* [Perception pipeline](#perception-pipeline)
+  * [SVM model](#svm-model)
+    * [Parameters](#parameters)
+    * [Training](#training)
+    * [Performance](#performance)
+      * [Figure 1](#figure-1)
+      * [Figure 2](#figure-2)
+      * [Figure 3](#figure-3)
+      * [Figure 4](#figure-4)
+      * [Figure 5](#figure-5)
+* [Pick\-n\-place requests](#pick-n-place-requests)
+  * [Files](#files)
+* [Implementation details](#implementation-details)
+  * [Dropbox class](#dropbox-class)
+* [Future work](#future-work)
+  * [Improvements](#improvements)
+  * [Extensions](#extensions)
+
+
+
 ## Overview
 
 This project involves object recognition for robot pick-and-place in Gazebo/RViz. A Willow Garage [PR2](http://www.willowgarage.com/pages/pr2/overview) robot is standing in front of a table on which various objects are placed. On both sides of the robot there are tables with a colored dropbox on each. The pick-and-place operation involves identifying the objects on the front table, picking them and placing them each in the appropriate box. Three different scenes, with 3, 5, and 8 objects, respectively, are presented to the robot.
