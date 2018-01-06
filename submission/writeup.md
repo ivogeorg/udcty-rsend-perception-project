@@ -50,27 +50,27 @@ _Note: The feature training and model files have been included for each scene._
 
 RViz views of the perception pipeline are shown below.
 
-##### Figure 1: Scene 3 with table filtered out
+##### Figure 1
 
-![alt text](images/perc_3_objects.png "Objects")
+![alt text](images/perc_3_objects.png "Scene 3 with table filtered out")
 
-##### Figure 2: Scene 3 with objects clustered 
+##### Figure 2 
 
-![alt text](images/perc_3_clustering.png "Clustering")
+![alt text](images/perc_3_clustering.png "Scene 3 with objects clustered")
 
-##### Figure 3: Scene 3 with 7/8 objects labeled
+##### Figure 3
 
 _Note: The Snacks object is misclassified as Glue._
 
-![alt text](images/perc_3_scene.png "Recognition")
+![alt text](images/perc_3_scene.png "Scene 3 with 7/8 objects labeled correctly")
 
-##### Figure 4: Scene 2 with 5/5 objects labeled
+##### Figure 4
 
-![alt text](images/perc_2_scene.png "Recognition")
+![alt text](images/perc_2_scene.png "Scene 2 with 5/5 objects labeled correctly")
 
-##### Figure 3: Scene 1 with 3/3 objects labeled
+##### Figure 5
 
-![alt text](images/perc_1_scene.png "Recognition")
+![alt text](images/perc_1_scene.png "Scene 1 with 3/3 objects labeled correctly")
 
 ## Pick-n-place requests
 
@@ -157,7 +157,7 @@ YAML files: [Scene 1](output_1.yaml) | [Scene 2](output_2.yaml) | [Scene 3](outp
 
 ## Implementation details
 
-### `class Dropbox`
+### Dropbox class
 
 The `Dropbox` class was used to clean up the parameter reading and streamline the request message construction.
 
